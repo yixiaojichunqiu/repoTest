@@ -1,0 +1,120 @@
+-(void)getData{
+    [SVProgressHUD showWithStatus:@"加载中"];
+    FTWeakSelf(self);
+    [FTNetworkTool postRequestWithURL:@"/tongchengbus/tcBus/startCityList" parameters:self.parameters progress:^(NSProgress * _Nonnull downloadProgress) {
+        
+    } success:^(id  _Nonnull responseObject) {
+        [weakself noDataImageBackground:NO];
+        NSArray *ar = responseObject[@"Result"];
+        NSMutableArray *modelar = [NSMutableArray new];
+        NSMutableArray *hotar = [NSMutableArray new];
+        
+        NSMutableArray *A_Result=[NSMutableArray array];
+        NSMutableArray *LetterResult=[NSMutableArray array];
+        NSMutableDictionary* tempDic = [NSMutableDictionary new];
+        
+        for (int i = 0; i < ar.count; i++) {
+            FTCarCityModel *model = [FTCarCityModel new];
+            NSDictionary* d = ar[i];
+            model.Name = d[@"Name"];
+            model.EnName = d[@"EnName"];
+            model.CityCode = d[@"CityCode"];
+            model.ShortEnName = d[@"ShortEnName"];
+            if ([@[@"北京",@"上海",@"广州",@"苏州",@"石家庄"]containsObject:model.Name]) {
+                [hotar addObject:model];//热度
+            }
+            [self.allDic setObject:model forKey:model.Name];
+            [modelar addObject:model];
+            
+            FTCarCityModel* m = model;
+            if(m.Name==nil){
+                m.Name=@"";
+            }
+            m.Name  = [m.Name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            m.Name =[self RemoveSpecialCharacter:m.Name];
+            
+            NSString *regex = @"[A-Za-z]+";
+            NSPredicate*predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regex];
+            
+            if ([predicate evaluateWithObject:m.Name])
+            {
+                //首字母大写
+                m.pinyin = [m.Name capitalizedString] ;
+            }else{
+                if(![m.Name isEqualToString:@""]){
+                    NSString *pinYinResult=[NSString string];
+                    for(int j=0;j<m.Name.length;j++){
+                        NSString *singlePinyinLetter=[[NSString stringWithFormat:@"%c",pinyinFirstLetter([m.Name characterAtIndex:j])]uppercaseString];
+                        
+                        pinYinResult=[pinYinResult stringByAppendingString:singlePinyinLetter];
+                    }
+                    m.pinyin=pinYinResult;
+                }else{
+                    m.pinyin=@"";
+                }
+            }
+            
+            NSString *pinyin = [m.pinyin substringToIndex:1];
+            FTCarCityModel *model1 = m;
+            //不同
+            if(tempDic[pinyin]==nil)
+            {
+                //分组
+                NSMutableArray *item = [NSMutableArray array];
+                [item  addObject:model1];
+                [LetterResult addObject:item];
+                //遍历
+                tempDic[pinyin]=item;
+                [A_Result addObject:pinyin];
+            }else{//相同
+                NSMutableArray *item = tempDic[pinyin];
+                [item  addObject:model1];
+            }
+
+        }
+        
+        
+        NSMutableArray * tempLetters = LetterResult;//l[@"LetterResult"];//[NSMutableArray arrayWithArray:[FTCarChineseParse LetterSortArray:modelar]];//根据字母判断的拿出来
+        NSMutableArray * tempIndexs = A_Result;//l[@"A_Result"];//[NSMutableArray arrayWithArray:[FTCarChineseParse IndexArray:modelar]];//字母标
+        
+        
+        
+        [tempIndexs sortUsingComparator: ^NSComparisonResult (NSString *str1, NSString *str2) {
+            return [str1 compare:str2];
+        }];
+        tempLetters = [NSMutableArray new];
+        for (int i = 0; i <tempIndexs.count; i++) {
+            [tempLetters addObject:tempDic[tempIndexs[i]]];
+        }
+        for (int i=0; i<tempLetters.count; i++) {
+            NSMutableArray* aaa = tempLetters[i];
+            NSArray *sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"pinyin" ascending:YES]];
+            [aaa sortUsingDescriptors:sortDescriptors];
+        }
+        
+        
+        if (modelar.count == 1) {
+            [hotar addObject:modelar[0]];
+        }
+        
+        [tempIndexs insertObject:@"热门" atIndex:0];//热门 abcdefghijklmnopqrstuvwxyz
+        [tempIndexs insertObject:@"历史" atIndex:0];
+        [tempIndexs insertObject:@"当前" atIndex:0];
+        [tempLetters insertObject:hotar atIndex:0];//热门的元素 然后对应的各个字母的元素
+        
+        indexArray = tempIndexs;
+        letterResultArr = tempLetters;
+        
+
+        table.hidden = NO;
+        [table reloadData];
+        [SVProgressHUD dismiss];
+
+    } Error:^(NSError * _Nonnull error) {
+        [SVProgressHUD showErrorWithStatus:@"没有到达站信息"];
+        [SVProgressHUD dismissWithDelay:1.5];
+        FTWeakSelf(self);
+        [weakself noDataImageBackground:YES];
+        
+    }];
+}

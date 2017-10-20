@@ -61,3 +61,8 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+#some local files
+*/.settings/
+*/.DS_Store
+.DS_Store

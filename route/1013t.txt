@@ -1,0 +1,112 @@
+Last login: Fri Oct 13 15:03:07 on ttys001
+bogon:~ mo$ cd /Users/mo/Desktop/localrp
+bogon:localrp mo$ ls
+bogon:localrp mo$ pwd
+/Users/mo/Desktop/localrp
+bogon:localrp mo$ git init
+Initialized empty Git repository in /Users/mo/Desktop/localrp/.git/
+bogon:localrp mo$ git add 12345
+bogon:localrp mo$ git commit
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'mo@bogon.(none)')
+bogon:localrp mo$ ls
+12345
+bogon:localrp mo$ get commit -m "a read file"
+-bash: get: command not found
+bogon:localrp mo$ git commit -m "a read file"
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'mo@bogon.(none)')
+bogon:localrp mo$ git config --global user.name "fdk"
+bogon:localrp mo$ git config --global user.email "fdk785126868@qq.com"
+bogon:localrp mo$ git commit -m "v0.01"
+[master (root-commit) d0b9e0d] v0.01
+ 2 files changed, 1 insertion(+)
+ create mode 100644 12345/.DS_Store
+ create mode 100644 12345/110.txt
+bogon:localrp mo$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   12345/110.txt
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	.DS_Store
+
+no changes added to commit (use "git add" and/or "git commit -a")
+bogon:localrp mo$ git diff 12345/110.txt
+diff --git a/12345/110.txt b/12345/110.txt
+index 9d07aa0..2ea8311 100644
+--- a/12345/110.txt
++++ b/12345/110.txt
+@@ -1 +1,3 @@
+-111
+\ No newline at end of file
++111
++
++2222222222222222
+\ No newline at end of file
+bogon:localrp mo$ 
+
+
+
+
+Last login: Fri Oct 13 16:36:39 on ttys001
+bogon:~ mo$ cd /Users/mo/Desktop/未命名文件夹/repoTest
+bogon:repoTest mo$ git push origin master
+fatal: unable to access 'https://github.com/yixiaojichunqiu/repoTest.git/': Failed to connect to github.com port 443: Operation timed out
+bogon:repoTest mo$ git branch
+* master
+bogon:repoTest mo$ git push repoTest master
+fatal: 'repoTest' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+bogon:repoTest mo$ git push -u origin master
+Branch master set up to track remote branch master from origin.
+Everything up-to-date
+bogon:repoTest mo$ git add route
+bogon:repoTest mo$ git commit -m "v0.02"
+[master 2a7ecf6] v0.02
+ 1 file changed, 1 insertion(+)
+ create mode 160000 route
+bogon:repoTest mo$ git push orgin master
+fatal: 'orgin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+bogon:repoTest mo$ git push origin master
+Counting objects: 2, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (2/2), 254 bytes | 0 bytes/s, done.
+Total 2 (delta 0), reused 0 (delta 0)
+To https://github.com/yixiaojichunqiu/repoTest.git
+   e07e25f..2a7ecf6  master -> master
+bogon:repoTest mo$ 
+
